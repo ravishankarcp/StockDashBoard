@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Trading Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.card {
+    background-color: #1e1e1e;
+    border: none;
+    color: #ffffff;
+}
+
+.table {
+    color: white;
+}
+
+.WIN { background-color: rgba(0,128,0,0.2); }
+.LOSS { background-color: rgba(255,0,0,0.2); }
+.Active { background-color: rgba(255,165,0,0.2); }
+
+.form-control {
+    background-color: #2c2c2c;
+    color: white;
+    border: 1px solid #444;
+}
+
+.form-check-label {
+    color: white;
+}
+</style>
+</head>
+
+<body>
+<div class="container-fluid p-4">
+
+<h2 class="mb-4">📊 Trading Strategy Dashboard</h2>
+
+<!-- ================= CONTROL PANEL ================= -->
+<div class="card p-4 mb-4">
+<form method="get" class="row g-3">
+
+<label>Index:</label>
+<select name="index">
+    <option value="nifty200" {% if selected_index == "nifty200" %}selected{% endif %}>NIFTY 200</option>
+    <option value="midcap" {% if selected_index == "midcap" %}selected{% endif %}>NIFTY Midcap 150</option>
+    <option value="smallcap" {% if selected_index == "smallcap" %}selected{% endif %}>NIFTY Smallcap 250</option>
+    <option value="sp500" {% if selected_index == "sp500" %}selected{% endif %}>S&P 500</option>
+</select>
+
+<div class="col-md-2">
+<label>Volume Threshold</label>
+<input class="form-control" name="vol" value="{{ vol }}">
+</div>
+
+
+<div class="col-md-2">
+<label>Take Profit %</label>
+<input class="form-control" name="tp" value="{{ tp }}">
+</div>
+
+<div class="col-md-2">
+<label>Stop Loss %</label>
+<input class="form-control" name="sl" value="{{ sl }}">
+</div>
+
+<div class="col-md-3 d-flex align-items-end">
+<button class="btn btn-primary w-100">Run Scan</button>
+</div>
+
+<div class="col-12 mt-3">
+
+<div class="form-check form-check-inline">
+<input class="form-check-input" type="checkbox" name="ema20"
+{% if use_ema20 %}checked{% endif %}>
+<label class="form-check-label">Use EMA20</label>
+</div>
+
+<div class="form-check form-check-inline">
+<input class="form-check-input" type="checkbox" name="ema50"
+{% if use_ema50 %}checked{% endif %}>
+<label class="form-check-label">Use EMA50</label>
+</div>
+
+<div class="form-check form-check-inline">
+<input class="form-check-input" type="checkbox" name="ema20touch"
+{% if ema20_no_touch %}checked{% endif %}>
+<label class="form-check-label">20 EMA No Touch</label>
+</div>
+
+<div class="form-check form-check-inline">
+<input class="form-check-input" type="checkbox" name="ema50touch"
+{% if ema50_no_touch %}checked{% endif %}>
+<label class="form-check-label">50 EMA No Touch</label>
+</div>
+
+</div>
+</form>
+</div>
+
+<!-- ================= METRICS ================= -->
+<div class="row mb-4">
+
+<div class="col-md-2">
+<div class="card text-center p-3">
+<h6>Total Trades</h6>
+<h3>{{ perf.total }}</h3>
+</div>
+</div>
+
+<div class="col-md-2">
+<div class="card text-center p-3">
+<h6>Win Rate</h6>
+<h3>{{ perf.win_rate }}%</h3>
+</div>
+</div>
+
+<div class="col-md-2">
+<div class="card text-center p-3">
+<h6>Expectancy</h6>
+<h3>{{ perf.expectancy }}%</h3>
+</div>
+</div>
+
+<div class="col-md-2">
+<div class="card text-center p-3">
+<h6>Profit Factor</h6>
+<h3>{{ perf.profit_factor }}</h3>
+</div>
+</div>
+
+<div class="col-md-2">
+<div class="card text-center p-3">
+<h6>Portfolio Value</h6>
+<h3>₹{{ perf.final_capital }}</h3>
+</div>
+</div>
+
+</div>
+
+<!-- ================= EQUITY CURVE ================= -->
+<div class="card p-4 mb-4 text-center">
+<h5>Equity Curve</h5>
+<img src="/static/equity_curve.png" class="img-fluid">
+</div>
+
+<!-- ================= TABLE ================= -->
+<div class="card p-4">
+<h5>Trade Results</h5>
+
+<div class="table-responsive">
+<table class="table table-dark table-striped">
+<thead>
+<tr>
+    <th>Stock</th>
+    <th>Bottom Date</th>
+    <th>Entry Date</th>
+    <th>Entry Price</th>
+    <th>Exit Date</th>
+    <th>Exit Price</th>
+    <th>Status</th>
+    <th>Return %</th>
+    <th>Chart</th>
+</tr>
+</thead>
+<tbody>
+{% for row in rows %}
+<tr>
+    <td>{{ row["Stock"] }}</td>
+    <td>{{ row["Bottom Date"] }}</td>
+    <td>{{ row["Entry Date"] }}</td>
+    <td>{{ row["Entry Price"] }}</td>
+    <td>{{ row["Exit Date"] }}</td>
+    <td>{{ row["Exit Price"] }}</td>
+    <td>{{ row["Status"] }}</td>
+    <td>{{ row["Return %"] }}</td>
+    <td><a href="{{ row["Chart"] }}" target="_blank">Chart</a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<br>
+<a href="/download" class="btn btn-outline-light">Download CSV</a>
+
+</div>
+
+</div>
+</body>
+</html>
