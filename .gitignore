@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+charts/
+static/*.png
+results.csv
+debug.txt
+equity_curve.png
+*.log
